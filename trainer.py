@@ -6,6 +6,8 @@ import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F 
 
+from torch.utils.tensorboard import SummaryWriter
+
 from time import time
 
 from gnn import GNN_module
@@ -141,6 +143,9 @@ class Trainer():
 
         self.logger.info(self.model)
 
+        # Tensorboard
+        self.writer = SummaryWriter(log_dir=str('tensorboard/'+str(self.args.nway)+'way_'+str(self.args.shots)+'shot'))
+
         self.total_iter = 0
         self.sample_size = 32
 
@@ -247,6 +252,10 @@ class Trainer():
             if i % self.args.log_interval == 0:
                 self.logger.info('iter: %d, spent: %.4f s, tr loss: %.5f' % (i, time() - start, 
                     np.mean(tr_loss_list)))
+
+                # Tensorboard logging
+                self.writer.add_scalar('loss/train', np.mean(tr_loss_list), self.total_iter)
+
                 del tr_loss_list[:]
                 start = time()  
 
@@ -256,6 +265,9 @@ class Trainer():
                 self.logger.info('================== eval ==================')
                 self.logger.info('iter: %d, va loss: %.5f, va acc: %.4f %%' % (i, va_loss, va_acc))
                 self.logger.info('==========================================')
+
+                # Tensorboard logging
+                self.writer.add_scalar('loss/valid', va_loss, self.total_iter)
 
                 if va_loss < best_loss:
                     stop = 0

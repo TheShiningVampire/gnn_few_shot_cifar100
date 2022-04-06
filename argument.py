@@ -32,6 +32,8 @@ def parser():
     parser.add_argument('--nway', default=20, type=int)
     parser.add_argument('--shots', default=5, type=int)
     parser.add_argument('--freeze_cnn', action='store_true', help='whether to freeze cnn-embedding layer')
+    # tensorboard logging directory
+    # parser.add_argument('--log_dir', default='tensorboard/logs', help='the folder to save tensorboard logs')
 
     return parser.parse_args()
 
