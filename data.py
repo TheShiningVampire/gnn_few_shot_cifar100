@@ -238,7 +238,7 @@ class self_DataLoader(Dataset):
 
         now_time = time.time()
 
-        random.Random(now_time).shuffle(data_list)
+        random.Random(now_time).shuffle(data_list)  
         random.Random(now_time).shuffle(label_list)
 
         return data_list, label_list
@@ -250,7 +250,7 @@ class self_DataLoader(Dataset):
         return self.get_data_list(self.few_data_dict)
 
 if __name__ == '__main__':
-    D = self_DataLoader('/home/lab5300/Data', True)
+    D = self_DataLoader('.//data', True)
 
     [x, label_y, one_hot_y, class_y, xi, label_yi, one_hot_yi, class_yi] = \
         D.load_tr_batch(batch_size=16, nway=5, num_shots=5)
