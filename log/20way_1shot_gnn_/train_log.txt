@@ -1,0 +1,29 @@
+todo             : train
+dataset          : cifar100
+model_type       : gnn
+pretrain         : False
+pretrain_dir     : 
+use_gpu          : 0
+seed             : 1
+batch_size       : 16
+lr               : 0.01
+max_iteration    : 100000
+log_interval     : 100
+eval_interval    : 2000
+early_stop       : 5
+early_stop_pretrain : 5
+test_dir         : 
+data_root        : data
+log_root         : log
+model_root       : model
+affix            : 
+save             : False
+load             : False
+load_dir         : 
+output_dir       : output
+output_name      : output.txt
+nway             : 20
+shots            : 1
+freeze_cnn       : False
+model_folder     : model\20way_1shot_gnn_
+log_folder       : log\20way_1shot_gnn_
