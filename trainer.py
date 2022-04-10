@@ -182,7 +182,8 @@ class Trainer():
 
                 label = data_cuda[1]
                 #loss = F.nll_loss(logsoft_prob, label)
-                loss = F.gaussian_nll_loss(logsoft_prob, label)
+                #loss = F.gaussian_nll_loss(logsoft_prob, label)
+                loss = F.kl_div(logsoft_prob, label)
 
                 total_loss += loss.item() * logsoft_prob.shape[0]
 
@@ -221,7 +222,8 @@ class Trainer():
         # experimenting with different categorical loss function
 
         #loss = F.nll_loss(logsoft_prob, label)
-        loss = F.gaussian_nll_loss(logsoft_prob, label)
+        # loss = F.gaussian_nll_loss(logsoft_prob, label)
+        loss = F.kl_div(logsoft_prob, label)
         loss.backward()
         self.opt.step()
 
