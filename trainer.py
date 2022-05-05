@@ -181,7 +181,10 @@ class Trainer():
                 logsoft_prob = self.model(data_cuda)
 
                 label = data_cuda[1]
-                loss = F.nll_loss(logsoft_prob, label)
+                #loss = F.nll_loss(logsoft_prob, label)
+                #loss = F.gaussian_nll_loss(logsoft_prob, label)
+                #loss = F.kl_div(logsoft_prob, label)
+                loss = F.kl_div(logsoft_prob, label, reduction == "batchmean")
 
                 total_loss += loss.item() * logsoft_prob.shape[0]
 
@@ -217,7 +220,11 @@ class Trainer():
         # print('label', data[2])
         label = data_cuda[1]
 
-        loss = F.nll_loss(logsoft_prob, label)
+        # experimenting with different categorical loss function
+
+        #loss = F.nll_loss(logsoft_prob, label)
+        # loss = F.gaussian_nll_loss(logsoft_prob, label)
+        loss = F.kl_div(logsoft_prob, label, reduction == "batchmean")
         loss.backward()
         self.opt.step()
 
@@ -337,7 +344,9 @@ class Trainer():
                 label = tensor2cuda(label)
                 output = classifier(cnn_feature(data))
                 output = F.log_softmax(output, dim=1)
-                loss = F.nll_loss(output, label)
+
+                #loss = F.nll_loss(output, label)
+                loss = F.kl_div(output, label, reduction == "batchmean")
 
                 total_loss += loss.item() * output.shape[0]
 
@@ -381,7 +390,8 @@ class Trainer():
                 output = classifier(cnn_feature(data))
 
                 output = F.log_softmax(output, dim=1)
-                loss = F.nll_loss(output, label)
+                #loss = F.nll_loss(output, label)
+                loss = F.kl_div(output, label, reduction == "batchmean")
 
                 self.pretrain_opt.zero_grad()
                 loss.backward()
