@@ -1,2 +1,9 @@
 /data
 /tensorboard
+*.pth
+*.txt
+*.pyc
+__pycache__/data.cpython-37.pyc
+log/20way_1shot_gnn_/train_log.txt
+__pycache__/trainer.cpython-37.pyc
+log/5way_1shot_gnn_/train_log.txt

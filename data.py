@@ -10,6 +10,8 @@ from torch.utils.data import Dataset
 import torchvision as tv
 from torchvision.datasets import CIFAR100
 
+import matplotlib.pyplot as plt
+
 class self_Dataset(Dataset):
     def __init__(self, data, label=None):
         super(self_Dataset, self).__init__()
@@ -89,35 +91,35 @@ class self_DataLoader(Dataset):
         return full_data_dict, few_data_dict
 
     def load_batch_data(self, train=True, batch_size=16, nway=5, num_shots=1):
-        class_to_index = ['beaver', 'dolphin', 'otter', 'seal', 'whale',
-           'aquarium+fish', 'flatfish', 'ray', 'shark', 'trout',
-           'orchids', 'poppies', 'roses', 'sunflowers', 'tulips',
-           'bottles', 'bowls', 'cans', 'cups', 'plates',
-           'apples', 'mushrooms', 'oranges', 'pears', 'peppers',
-           'clock', 'computer+keyboard', 'lamp', 'telephone', 'television',
-           'bed', 'chair', 'couch', 'table', 'wardrobe',
-           'bee', 'beetle', 'butterfly', 'caterpillar', 'cockroach',
-           'bear', 'leopard', 'lion', 'tiger', 'wolf',
-           'bridge', 'castle', 'house', 'road', 'skyscraper',
-           'cloud', 'forest', 'mountain', 'plain', 'sea',
-           'camel', 'cattle', 'chimpanzee', 'elephant', 'kangaroo',
-           'fox', 'porcupine', 'possum', 'raccoon', 'skunk',
-           'crab', 'lobster', 'snail', 'spider', 'worm',
-           'baby', 'boy', 'girl', 'man', 'woman',
-           'crocodile', 'dinosaur', 'lizard', 'snake', 'turtle',
-           'hamster', 'mouse', 'rabbit', 'shrew', 'squirrel',
-           'maple', 'oak', 'palm', 'pine', 'willow',
-           'bicycle', 'bus', 'motorcycle', 'pickup+truck', 'train',
-           'lawn+mower', 'rocket', 'streetcar', 'tank', 'tractor']
+        # class_to_index = ['beaver', 'dolphin', 'otter', 'seal', 'whale',
+        #    'aquarium+fish', 'flatfish', 'ray', 'shark', 'trout',
+        #    'orchids', 'poppies', 'roses', 'sunflowers', 'tulips',
+        #    'bottles', 'bowls', 'cans', 'cups', 'plates',
+        #    'apple', 'mushrooms', 'oranges', 'pears', 'peppers',
+        #    'clock', 'computer+keyboard', 'lamp', 'telephone', 'television',
+        #    'bed', 'chair', 'couch', 'table', 'wardrobe',
+        #    'bee', 'beetle', 'butterfly', 'caterpillar', 'cockroach',
+        #    'bear', 'leopard', 'lion', 'tiger', 'wolf',
+        #    'bridge', 'castle', 'house', 'road', 'skyscraper',
+        #    'cloud', 'forest', 'mountain', 'plain', 'sea',
+        #    'camel', 'cattle', 'chimpanzee', 'elephant', 'kangaroo',
+        #    'fox', 'porcupine', 'possum', 'raccoon', 'skunk',
+        #    'crab', 'lobster', 'snail', 'spider', 'worm',
+        #    'baby', 'boy', 'girl', 'man', 'woman',
+        #    'crocodile', 'dinosaur', 'lizard', 'snake', 'turtle',
+        #    'hamster', 'mouse', 'rabbit', 'shrew', 'squirrel',
+        #    'maple', 'oak', 'palm', 'pine', 'willow',
+        #    'bicycle', 'bus', 'motorcycle', 'pickup+truck', 'train',
+        #    'lawn+mower', 'rocket', 'streetcar', 'tank', 'tractor']
 
 
         # Read the glove embedding file
-        embeddings = pd.read_csv("glove_embed.csv", header=None)
+        embeddings = pd.read_csv("embeddings_sorted.csv", header=None, index_col=None)
 
         # Convert the embeddings to a dictionary where rows are classes corresponding to class_to_index and columns are embeddings
         embedding_dict = {}
-        for index, row in embeddings.iterrows():
-            embedding_dict[class_to_index[index]] = row.values[:]
+        for i in range(len(embeddings)):
+            embedding_dict[i] = embeddings.iloc[i, :].values
 
         if train:
             data_dict = self.full_data_dict
@@ -144,8 +146,6 @@ class self_DataLoader(Dataset):
 
             # sample the class to train
             sampled_classes = random.sample(data_dict.keys(), nway)
-
-            print(data_dict.keys())
 
             positive_class = random.randint(0, nway - 1)
 
