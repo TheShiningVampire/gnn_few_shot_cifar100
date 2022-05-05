@@ -3,6 +3,7 @@ import time
 import random
 import skimage.io
 import numpy as np
+import pandas as pd
 
 import torch
 from torch.utils.data import Dataset
@@ -88,6 +89,36 @@ class self_DataLoader(Dataset):
         return full_data_dict, few_data_dict
 
     def load_batch_data(self, train=True, batch_size=16, nway=5, num_shots=1):
+        class_to_index = ['beaver', 'dolphin', 'otter', 'seal', 'whale',
+           'aquarium+fish', 'flatfish', 'ray', 'shark', 'trout',
+           'orchids', 'poppies', 'roses', 'sunflowers', 'tulips',
+           'bottles', 'bowls', 'cans', 'cups', 'plates',
+           'apples', 'mushrooms', 'oranges', 'pears', 'peppers',
+           'clock', 'computer+keyboard', 'lamp', 'telephone', 'television',
+           'bed', 'chair', 'couch', 'table', 'wardrobe',
+           'bee', 'beetle', 'butterfly', 'caterpillar', 'cockroach',
+           'bear', 'leopard', 'lion', 'tiger', 'wolf',
+           'bridge', 'castle', 'house', 'road', 'skyscraper',
+           'cloud', 'forest', 'mountain', 'plain', 'sea',
+           'camel', 'cattle', 'chimpanzee', 'elephant', 'kangaroo',
+           'fox', 'porcupine', 'possum', 'raccoon', 'skunk',
+           'crab', 'lobster', 'snail', 'spider', 'worm',
+           'baby', 'boy', 'girl', 'man', 'woman',
+           'crocodile', 'dinosaur', 'lizard', 'snake', 'turtle',
+           'hamster', 'mouse', 'rabbit', 'shrew', 'squirrel',
+           'maple', 'oak', 'palm', 'pine', 'willow',
+           'bicycle', 'bus', 'motorcycle', 'pickup+truck', 'train',
+           'lawn+mower', 'rocket', 'streetcar', 'tank', 'tractor']
+
+
+        # Read the glove embedding file
+        embeddings = pd.read_csv("glove_embed.csv", header=None)
+
+        # Convert the embeddings to a dictionary where rows are classes corresponding to class_to_index and columns are embeddings
+        embedding_dict = {}
+        for index, row in embeddings.iterrows():
+            embedding_dict[class_to_index[index]] = row.values[:]
+
         if train:
             data_dict = self.full_data_dict
         else:
@@ -114,6 +145,8 @@ class self_DataLoader(Dataset):
             # sample the class to train
             sampled_classes = random.sample(data_dict.keys(), nway)
 
+            print(data_dict.keys())
+
             positive_class = random.randint(0, nway - 1)
 
             label2class = torch.LongTensor(nway)
@@ -133,9 +166,13 @@ class self_DataLoader(Dataset):
                     x.append(sampled_data[0])
                     label_y.append(torch.LongTensor([j]))
 
-                    one_hot = torch.zeros(nway)
-                    one_hot[j] = 1.0
-                    one_hot_y.append(one_hot)
+                    # one_hot = torch.zeros(nway)
+                    # one_hot[j] = 1.0
+                    # one_hot_y.append(one_hot)
+
+                    # use one_hot vector as the glove embedding
+                    embedding = torch.FloatTensor(embedding_dict[_class])
+                    one_hot_y.append(embedding)
 
                     class_y.append(torch.LongTensor([_class]))
 
@@ -145,9 +182,11 @@ class self_DataLoader(Dataset):
 
                 single_xi += shots_data
                 single_label_yi.append(torch.LongTensor([j]).repeat(num_shots))
-                one_hot = torch.zeros(nway)
-                one_hot[j] = 1.0
-                single_one_hot_yi.append(one_hot.repeat(num_shots, 1))
+                # one_hot = torch.zeros(nway)
+                # one_hot[j] = 1.0
+                embedding = torch.FloatTensor(embedding_dict[_class])
+                
+                single_one_hot_yi.append(embedding.repeat(num_shots, 1))
 
                 label2class[j] = _class
 
