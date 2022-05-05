@@ -10,7 +10,6 @@ from torch.utils.data import Dataset
 import torchvision as tv
 from torchvision.datasets import CIFAR100
 
-import matplotlib.pyplot as plt
 
 class self_Dataset(Dataset):
     def __init__(self, data, label=None):
